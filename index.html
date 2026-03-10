@@ -39,7 +39,7 @@
             opacity: 0;
         }
 
-        .bg-layer.active { opacity: 0.5; }
+        .bg-layer.active { opacity: 0.6; }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.88);
@@ -92,7 +92,6 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #d1d1d1; border-radius: 10px; }
         
-        /* 彩蛋提示動畫 */
         .milestone-badge {
             animation: fadeInDown 0.8s ease-out;
         }
@@ -101,12 +100,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 關鍵對齊修正 */
         input[type="datetime-local"] {
             -webkit-appearance: none;
             appearance: none;
             min-height: 1.2em;
-            text-align: left; /* 強制靠左 */
+            text-align: left;
             width: 100%;
             background: transparent;
             border: none;
@@ -115,7 +113,6 @@
             display: block;
         }
         
-        /* 解決 iOS 預設置中問題 */
         input[type="datetime-local"]::-webkit-date-and-time-value {
             text-align: left;
             margin: 0;
@@ -131,19 +128,14 @@
     <!-- 頂部導覽 -->
     <header class="w-full max-w-5xl flex justify-between items-center px-4 md:px-6 py-4 md:py-6 z-10">
         <div class="flex flex-col text-left">
-            <span class="text-[8px] md:text-[10px] tracking-[0.4em] text-gray-400 font-bold uppercase">Muji Lifestyle Travel</span>
             <span id="currentTime" class="text-[10px] md:text-xs font-light tracking-widest text-gray-500">00:00:00</span>
-        </div>
-        <div class="text-[8px] md:text-[10px] tracking-[0.2em] text-gray-400 uppercase font-medium">
-            Seamless Journey
         </div>
     </header>
 
     <main class="w-full max-w-2xl flex flex-col items-center z-10 px-4 mt-4 md:mt-8">
         
-        <!-- 里程碑彩蛋區 -->
-        <div id="milestoneArea" class="h-16 md:h-20 flex flex-col items-center justify-center mb-4 md:mb-8 w-full">
-            <!-- JS 動態插入 -->
+        <!-- 里程碑彩蛋區 (改為階段性中英顯示) -->
+        <div id="milestoneArea" class="h-20 md:h-24 flex flex-col items-center justify-center mb-4 md:mb-8 w-full">
         </div>
 
         <!-- 目的地 -->
@@ -173,19 +165,16 @@
         <!-- 下方資訊面板 -->
         <div class="glass-card w-full p-6 md:p-8 mb-20 shadow-sm">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                <!-- 目的地選擇 - 確保靠左對齊 -->
                 <div id="openCityModal" class="input-box border-b border-gray-100 pb-3 flex flex-col items-start justify-end">
                     <label class="text-[9px] text-gray-400 tracking-widest uppercase font-bold block mb-1 text-left">Destination</label>
                     <div id="selectedCityText" class="text-base md:text-lg font-medium text-gray-800 leading-none text-left w-full">Sapporo, Japan</div>
                 </div>
-                <!-- 出發日期選擇 - 確保靠左對齊 -->
                 <div class="border-b border-gray-100 pb-3 flex flex-col items-start justify-end">
                     <label class="text-[9px] text-gray-400 tracking-widest uppercase font-bold block mb-1 text-left">Departure</label>
                     <input type="datetime-local" id="dateInput" class="text-base md:text-lg font-medium text-gray-800 leading-none">
                 </div>
             </div>
 
-            <!-- 實用資訊欄位 -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-8 md:mt-10">
                 <div class="bg-black/[0.03] p-4 md:p-5 rounded-2xl border border-white/50">
                     <div class="flex items-center gap-2 mb-2 md:mb-3">
@@ -211,7 +200,6 @@
         </div>
     </main>
 
-    <!-- 城市選取 Modal -->
     <div id="cityModal" class="items-center justify-center p-4">
         <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
             <div class="p-4 md:p-6 border-b border-gray-50 flex justify-between items-center">
@@ -229,27 +217,27 @@
 
         const destinations = {
             "Japan: Hokkaido": [
-                { name: "Sapporo", full: "Sapporo, Japan", icon: "🇯🇵", query: "sapporo,snow", tz: 9, cur: "JPY" },
-                { name: "Otaru", full: "Otaru, Japan", icon: "🇯🇵", query: "otaru,canal", tz: 9, cur: "JPY" },
-                { name: "Furano", full: "Furano, Japan", icon: "🇯🇵", query: "furano,flower", tz: 9, cur: "JPY" }
+                { name: "Sapporo", full: "Sapporo, Japan", icon: "🇯🇵", query: "sapporo,japan", tz: 9, cur: "JPY" },
+                { name: "Otaru", full: "Otaru, Japan", icon: "🇯🇵", query: "otaru,hokkaido", tz: 9, cur: "JPY" },
+                { name: "Furano", full: "Furano, Japan", icon: "🇯🇵", query: "furano,lavender", tz: 9, cur: "JPY" }
             ],
             "Japan: Honshu": [
-                { name: "Tokyo", full: "Tokyo, Japan", icon: "🇯🇵", query: "tokyo,cityscape", tz: 9, cur: "JPY" },
-                { name: "Kyoto", full: "Kyoto, Japan", icon: "🇯🇵", query: "kyoto,shrine", tz: 9, cur: "JPY" },
-                { name: "Osaka", full: "Osaka, Japan", icon: "🇯🇵", query: "osaka,street", tz: 9, cur: "JPY" }
+                { name: "Tokyo", full: "Tokyo, Japan", icon: "🇯🇵", query: "tokyo,shibuya", tz: 9, cur: "JPY" },
+                { name: "Kyoto", full: "Kyoto, Japan", icon: "🇯🇵", query: "kyoto,pagoda", tz: 9, cur: "JPY" },
+                { name: "Osaka", full: "Osaka, Japan", icon: "🇯🇵", query: "osaka,dotonbori", tz: 9, cur: "JPY" }
             ],
             "East Asia": [
-                { name: "Seoul", full: "Seoul, Korea", icon: "🇰🇷", query: "seoul,modern", tz: 9, cur: "KRW" },
+                { name: "Seoul", full: "Seoul, Korea", icon: "🇰🇷", query: "seoul,city", tz: 9, cur: "KRW" },
                 { name: "Taipei", full: "Taipei, Taiwan", icon: "🇹🇼", query: "taipei,101", tz: 8, cur: "TWD" },
                 { name: "Hong Kong", full: "Hong Kong", icon: "🇭🇰", query: "hongkong,skyline", tz: 8, cur: "HKD" }
             ],
             "Europe": [
-                { name: "Paris", full: "Paris, France", icon: "🇫🇷", query: "paris,louvre", tz: 1, cur: "EUR" },
-                { name: "London", full: "London, UK", icon: "🇬🇧", query: "london,thames", tz: 0, cur: "GBP" }
+                { name: "Paris", full: "Paris, France", icon: "🇫🇷", query: "paris,eiffel", tz: 1, cur: "EUR" },
+                { name: "London", full: "London, UK", icon: "🇬🇧", query: "london,bridge", tz: 0, cur: "GBP" }
             ],
             "America": [
-                { name: "New York", full: "New York, USA", icon: "🇺🇸", query: "newyork,manhattan", tz: -5, cur: "USD" },
-                { name: "Los Angeles", full: "LA, USA", icon: "🇺🇸", query: "losangeles,palm", tz: -8, cur: "USD" }
+                { name: "New York", full: "New York, USA", icon: "🇺🇸", query: "newyork,skyline", tz: -5, cur: "USD" },
+                { name: "Los Angeles", full: "LA, USA", icon: "🇺🇸", query: "losangeles,hollywood", tz: -8, cur: "USD" }
             ]
         };
 
@@ -269,7 +257,7 @@
 
         function setBackground(city) {
             const next = (bgIdx + 1) % 2;
-            const url = `https://images.unsplash.com/featured/?${encodeURIComponent(city.query)},minimalist`;
+            const url = `https://images.unsplash.com/featured/?${encodeURIComponent(city.query)}`;
             const img = new Image();
             img.src = url;
             img.onload = () => {
@@ -287,8 +275,9 @@
             
             if (diff <= 0) {
                 daysArea.innerText = "00";
-                timeArea.innerText = "GO TRAVEL!";
+                timeArea.innerText = "LET'S GO!";
                 setProgress(100);
+                checkMilestone(0);
                 return;
             }
             
@@ -312,27 +301,46 @@
 
         function checkMilestone(d) {
             const area = document.getElementById('milestoneArea');
-            let content = "";
-            const milestoneDays = [30, 20, 10, 5, 1];
+            let zh = "";
+            let en = "";
             
+            // 判斷當前天數處於哪個階段 (30/20/15/10/5/1)
             if (d === 0) {
-                content = "就是今天！帶上好心情出發吧";
-            } else if (milestoneDays.includes(d)) {
-                const messages = {
-                    30: "倒數一個月，期待與風景相遇 🌱",
-                    20: "倒數 20 天，是不是已經心不在焉了呢？",
-                    10: "倒數 10 天，可以開始慢慢收拾行李囉 🎒",
-                    5: "快到了！這幾天先研究當地必吃美食 🍱",
-                    1: "明天就要出發了，檢查一下護照喔！✨"
-                };
-                content = messages[d];
+                zh = "就是今天！帶上好心情出發吧";
+                en = "Today is the day! Let's go with a big smile.";
+            } else if (d === 1) {
+                zh = "明天就要出發了，檢查一下護照喔！✨";
+                en = "Leaving tomorrow! Don't forget your passport.";
+            } else if (d <= 5) {
+                zh = "快到了！這幾天先研究當地必吃美食 🍱";
+                en = "Almost there! Time to check out local food spots.";
+            } else if (d <= 10) {
+                zh = "倒數 10 天內，可以開始慢慢收拾行李囉 🎒";
+                en = "Within 10 days. Perfect time to start packing.";
+            } else if (d <= 15) {
+                zh = "剩下約兩週！確認一下必逛的景點與交通 🗺️";
+                en = "Two weeks left! Double-check your itinerary.";
+            } else if (d <= 20) {
+                zh = "倒數 20 天內，是不是已經心不在焉了呢？";
+                en = "Within 20 days. Already dreaming of your trip?";
+            } else if (d <= 30) {
+                zh = "進入倒數一個月，期待與最美的風景相遇 🌱";
+                en = "Under 30 days. A beautiful journey awaits.";
             } else {
-                content = "\"Simple is not just simple, it's a way of living.\"";
+                zh = "「Travel to the World」";
+                en = "Simple is not just simple, it's a way of living.";
             }
             
-            if (area.getAttribute('data-day') !== d.toString()) {
-                area.innerHTML = `<p class="milestone-badge text-[9px] md:text-[11px] text-gray-400 tracking-[0.2em] md:tracking-[0.3em] uppercase italic text-center leading-relaxed px-4">${content}</p>`;
-                area.setAttribute('data-day', d.toString());
+            // 避免頻繁重複刷新 DOM
+            const currentPhase = d > 30 ? "idle" : (d === 0 ? "today" : `phase-${Math.ceil(d/5)}`);
+            if (area.getAttribute('data-phase') !== currentPhase) {
+                area.innerHTML = `
+                    <div class="milestone-badge flex flex-col items-center gap-1">
+                        <p class="text-[10px] md:text-xs text-gray-800 font-medium text-center leading-relaxed px-4">${zh}</p>
+                        <p class="text-[8px] md:text-[9px] text-gray-400 tracking-[0.1em] uppercase italic text-center px-4">${en}</p>
+                    </div>
+                `;
+                area.setAttribute('data-phase', currentPhase);
             }
         }
 
