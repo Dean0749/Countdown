@@ -50,10 +50,17 @@
 
         .countdown-circle {
             position: relative;
-            width: 260px;
-            height: 260px;
+            width: 220px;
+            height: 220px;
         }
-        .countdown-svg { transform: rotate(-90deg); }
+        @media (min-width: 640px) {
+            .countdown-circle {
+                width: 260px;
+                height: 260px;
+            }
+        }
+
+        .countdown-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
         .countdown-progress {
             fill: none;
             stroke: var(--muji-red);
@@ -102,80 +109,80 @@
     </div>
 
     <!-- 頂部導覽 -->
-    <header class="w-full max-w-5xl flex justify-between items-center px-6 py-6 z-10">
+    <header class="w-full max-w-5xl flex justify-between items-center px-4 md:px-6 py-4 md:py-6 z-10">
         <div class="flex flex-col">
-            <span class="text-[10px] tracking-[0.4em] text-gray-400 font-bold uppercase">Muji Lifestyle Travel</span>
-            <span id="currentTime" class="text-xs font-light tracking-widest text-gray-500">00:00:00</span>
+            <span class="text-[8px] md:text-[10px] tracking-[0.4em] text-gray-400 font-bold uppercase">Muji Lifestyle Travel</span>
+            <span id="currentTime" class="text-[10px] md:text-xs font-light tracking-widest text-gray-500">00:00:00</span>
         </div>
-        <div class="text-[10px] tracking-[0.2em] text-gray-400 uppercase font-medium">
+        <div class="text-[8px] md:text-[10px] tracking-[0.2em] text-gray-400 uppercase font-medium">
             Seamless Journey
         </div>
     </header>
 
-    <main class="w-full max-w-2xl flex flex-col items-center z-10 px-4 mt-8">
+    <main class="w-full max-w-2xl flex flex-col items-center z-10 px-4 mt-4 md:mt-8">
         
         <!-- 里程碑彩蛋區 -->
-        <div id="milestoneArea" class="h-20 flex flex-col items-center justify-center mb-8">
+        <div id="milestoneArea" class="h-16 md:h-20 flex flex-col items-center justify-center mb-4 md:mb-8">
             <!-- JS 動態插入 -->
         </div>
 
         <!-- 目的地 -->
-        <div class="text-center mb-10">
-            <div class="flex items-center justify-center gap-4">
-                <span id="destIcon" class="text-4xl drop-shadow-sm">🇯🇵</span>
-                <h1 id="mainDestTitle" class="text-4xl font-light tracking-tight text-gray-800">Sapporo</h1>
+        <div class="text-center mb-6 md:mb-10">
+            <div class="flex items-center justify-center gap-2 md:gap-4">
+                <span id="destIcon" class="text-3xl md:text-4xl drop-shadow-sm">🇯🇵</span>
+                <h1 id="mainDestTitle" class="text-3xl md:text-4xl font-light tracking-tight text-gray-800">Sapporo</h1>
             </div>
-            <div id="localTimeDisplay" class="text-[10px] text-gray-400 tracking-[0.2em] mt-3 uppercase">
+            <div id="localTimeDisplay" class="text-[9px] md:text-[10px] text-gray-400 tracking-[0.2em] mt-2 md:mt-3 uppercase">
                 Local Time: --:--:--
             </div>
         </div>
 
         <!-- 倒數圓圈 -->
-        <div class="countdown-circle mb-12 flex items-center justify-center">
-            <svg class="countdown-svg absolute top-0 left-0" width="260" height="260">
+        <div class="countdown-circle mb-8 md:mb-12 flex items-center justify-center">
+            <svg class="countdown-svg absolute top-0 left-0" viewBox="0 0 260 260">
                 <circle class="fill-none stroke-black/5" cx="130" cy="130" r="125" stroke-width="2"></circle>
                 <circle id="progressBar" class="countdown-progress" cx="130" cy="130" r="125" stroke-dasharray="785" stroke-dashoffset="785"></circle>
             </svg>
             <div class="text-center">
-                <div id="daysLeft" class="text-8xl font-bold tracking-tighter text-gray-800 leading-none">00</div>
-                <div class="text-[9px] text-gray-400 tracking-[0.6em] mt-4 font-bold uppercase">Days to go</div>
-                <div id="timeLeft" class="text-[10px] text-gray-500 mt-5 font-mono tracking-[0.2em] bg-white/80 border border-black/5 px-4 py-1.5 rounded-full">00:00:00</div>
+                <div id="daysLeft" class="text-6xl md:text-8xl font-bold tracking-tighter text-gray-800 leading-none">00</div>
+                <div class="text-[8px] md:text-[9px] text-gray-400 tracking-[0.6em] mt-2 md:mt-4 font-bold uppercase">Days to go</div>
+                <div id="timeLeft" class="text-[9px] md:text-[10px] text-gray-500 mt-4 md:mt-5 font-mono tracking-[0.2em] bg-white/80 border border-black/5 px-3 md:px-4 py-1 rounded-full inline-block">00:00:00</div>
             </div>
         </div>
 
         <!-- 下方資訊面板 -->
-        <div class="glass-card w-full p-8 mb-20 shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass-card w-full p-6 md:p-8 mb-20 shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <div id="openCityModal" class="input-box border-b border-gray-100 pb-2">
                     <label class="text-[9px] text-gray-400 tracking-widest uppercase font-bold block mb-1">Destination</label>
-                    <div id="selectedCityText" class="text-lg font-medium text-gray-800">Sapporo, Japan</div>
+                    <div id="selectedCityText" class="text-base md:text-lg font-medium text-gray-800">Sapporo, Japan</div>
                 </div>
                 <div class="border-b border-gray-100 pb-2">
                     <label class="text-[9px] text-gray-400 tracking-widest uppercase font-bold block mb-1">Departure</label>
-                    <input type="datetime-local" id="dateInput" class="w-full text-lg font-medium bg-transparent outline-none">
+                    <input type="datetime-local" id="dateInput" class="w-full text-base md:text-lg font-medium bg-transparent outline-none">
                 </div>
             </div>
 
             <!-- 實用資訊欄位 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-                <div class="bg-black/[0.03] p-5 rounded-2xl border border-white/50">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-lg" id="weatherIcon">☀️</span>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Local Weather</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-8 md:mt-10">
+                <div class="bg-black/[0.03] p-4 md:p-5 rounded-2xl border border-white/50">
+                    <div class="flex items-center gap-2 mb-2 md:mb-3">
+                        <span class="text-base md:text-lg" id="weatherIcon">☀️</span>
+                        <span class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gray-400">Local Weather</span>
                     </div>
                     <div class="space-y-1">
-                        <p id="weatherTemp" class="text-sm font-medium text-gray-800">--°C / --</p>
-                        <p id="weatherDetails" class="text-[10px] text-gray-500 leading-relaxed uppercase tracking-wider">Loading...</p>
+                        <p id="weatherTemp" class="text-xs md:text-sm font-medium text-gray-800">--°C / --</p>
+                        <p id="weatherDetails" class="text-[9px] md:text-[10px] text-gray-500 leading-relaxed uppercase tracking-wider">Loading...</p>
                     </div>
                 </div>
-                <div class="bg-black/[0.03] p-5 rounded-2xl border border-white/50">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-lg">💱</span>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Financial & Time</span>
+                <div class="bg-black/[0.03] p-4 md:p-5 rounded-2xl border border-white/50">
+                    <div class="flex items-center gap-2 mb-2 md:mb-3">
+                        <span class="text-base md:text-lg">💱</span>
+                        <span class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gray-400">Financial & Time</span>
                     </div>
                     <div class="space-y-1">
-                        <p id="currencyRef" class="text-sm font-medium text-gray-800">--</p>
-                        <p id="localTzInfo" class="text-[10px] text-gray-500 leading-relaxed uppercase tracking-wider">Timezone: --</p>
+                        <p id="currencyRef" class="text-xs md:text-sm font-medium text-gray-800">--</p>
+                        <p id="localTzInfo" class="text-[9px] md:text-[10px] text-gray-500 leading-relaxed uppercase tracking-wider">Timezone: --</p>
                     </div>
                 </div>
             </div>
@@ -185,12 +192,12 @@
     <!-- 城市選取 Modal -->
     <div id="cityModal" class="items-center justify-center p-4">
         <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-            <div class="p-6 border-b border-gray-50 flex justify-between items-center">
-                <h2 class="text-lg font-bold text-gray-800">Select Destination</h2>
-                <button id="closeCityModal" class="text-gray-400 hover:text-gray-800">✕</button>
+            <div class="p-4 md:p-6 border-b border-gray-50 flex justify-between items-center">
+                <h2 class="text-base md:text-lg font-bold text-gray-800">Select Destination</h2>
+                <button id="closeCityModal" class="text-gray-400 hover:text-gray-800 p-2">✕</button>
             </div>
-            <div class="flex overflow-x-auto bg-gray-50 px-6 py-2 gap-6 no-scrollbar" id="modalTabs"></div>
-            <div class="p-8 max-h-[60vh] overflow-y-auto" id="cityList"></div>
+            <div class="flex overflow-x-auto bg-gray-50 px-4 md:px-6 py-2 gap-4 md:gap-6 no-scrollbar" id="modalTabs"></div>
+            <div class="p-4 md:p-8 max-h-[50vh] md:max-h-[60vh] overflow-y-auto" id="cityList"></div>
         </div>
     </div>
 
@@ -304,7 +311,7 @@
             
             // 只有內容變動時才更新，避免動畫重複觸發
             if (area.getAttribute('data-day') !== d.toString()) {
-                area.innerHTML = `<p class="milestone-badge text-[11px] text-gray-400 tracking-[0.3em] uppercase italic text-center leading-relaxed px-4">${content}</p>`;
+                area.innerHTML = `<p class="milestone-badge text-[9px] md:text-[11px] text-gray-400 tracking-[0.2em] md:tracking-[0.3em] uppercase italic text-center leading-relaxed px-4">${content}</p>`;
                 area.setAttribute('data-day', d.toString());
             }
         }
@@ -316,7 +323,7 @@
 
             regions.forEach((reg, i) => {
                 const btn = document.createElement('button');
-                btn.className = `whitespace-nowrap px-4 py-2 text-xs font-bold uppercase tracking-widest ${i===0?'city-tab-active':'text-gray-400'}`;
+                btn.className = `whitespace-nowrap px-3 md:px-4 py-2 text-[10px] md:text-xs font-bold uppercase tracking-widest ${i===0?'city-tab-active':'text-gray-400'}`;
                 btn.innerText = reg;
                 btn.onclick = () => {
                     document.querySelectorAll('#modalTabs button').forEach(b => b.classList.remove('city-tab-active', 'text-gray-400'));
@@ -330,8 +337,8 @@
                 list.innerHTML = "";
                 destinations[reg].forEach(city => {
                     const item = document.createElement('div');
-                    item.className = "flex justify-between items-center py-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50 px-2 rounded-xl transition-all";
-                    item.innerHTML = `<div><span class="text-sm font-medium text-gray-800">${city.name}</span><span class="ml-2 text-gray-400 text-[10px]">${city.icon}</span></div><span class="text-gray-300">→</span>`;
+                    item.className = "flex justify-between items-center py-3 md:py-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50 px-2 rounded-xl transition-all";
+                    item.innerHTML = `<div><span class="text-xs md:text-sm font-medium text-gray-800">${city.name}</span><span class="ml-2 text-gray-400 text-[10px]">${city.icon}</span></div><span class="text-gray-300">→</span>`;
                     item.onclick = () => selectCity(city);
                     list.appendChild(item);
                 });
