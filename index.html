@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travel Countdown - MUJI Hand-crafted Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@200;300;400;500;600&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
     <style>
         :root {
             --muji-beige: #F5F4F0;
@@ -23,7 +23,6 @@
             margin: 0;
             overflow-x: hidden;
             min-height: 100vh;
-            /* 移除顆粒感，改用細膩的線性漸層 */
             background: linear-gradient(180deg, #F9F8F6 0%, var(--muji-beige) 100%);
             display: flex;
             flex-direction: column;
@@ -43,7 +42,6 @@
             background-position: center;
             transition: opacity 3s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
-            /* 優化濾鏡讓照片更柔和 */
             filter: saturate(0.8) contrast(0.95) brightness(1.05);
         }
 
@@ -55,7 +53,6 @@
             -webkit-backdrop-filter: blur(40px);
             border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 32px;
-            /* 柔軟的層次陰影 */
             box-shadow: 
                 0 10px 40px -10px rgba(0,0,0,0.03),
                 0 20px 80px -20px rgba(130, 120, 110, 0.1);
@@ -63,7 +60,7 @@
 
         .countdown-wrapper {
             position: relative;
-            padding: 60px;
+            padding: 40px;
         }
 
         .countdown-circle {
@@ -75,17 +72,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* 加強圓圈的立體陰影與呼吸質感 */
             box-shadow: 
                 0 20px 60px -10px rgba(0,0,0,0.06),
                 inset 0 2px 10px rgba(255,255,255,1),
                 inset 0 -2px 15px rgba(0,0,0,0.02);
             z-index: 2;
-            transition: transform 0.3s ease;
         }
 
         @media (min-width: 640px) {
-            .countdown-circle { width: 360px; height: 360px; }
+            .countdown-circle { width: 340px; height: 340px; }
         }
 
         .breathing-aura {
@@ -93,19 +88,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 130%;
-            height: 130%;
-            background: radial-gradient(circle, var(--aura-color) 0%, transparent 75%);
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle, var(--aura-color) 0%, transparent 70%);
             border-radius: 50%;
             z-index: 1;
-            /* 加強呼吸感動畫 */
             animation: breath 8s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
             pointer-events: none;
         }
 
         @keyframes breath {
             0%, 100% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.2; }
-            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.6; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.5; }
         }
 
         .countdown-svg { 
@@ -121,28 +115,27 @@
             stroke: var(--muji-red);
             stroke-width: 3; 
             stroke-linecap: round;
-            transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0.4;
+            transition: stroke-dashoffset 2s ease;
+            opacity: 0.35;
         }
 
         #daysLeft {
             font-size: 7rem;
-            font-weight: 500; /* 加粗字體 */
+            font-weight: 500;
             letter-spacing: -0.05em;
             color: #1A1A1A;
             line-height: 1;
         }
 
         @media (min-width: 640px) {
-            #daysLeft { font-size: 9rem; }
+            #daysLeft { font-size: 8.5rem; }
         }
 
         .main-title {
-            font-weight: 600; /* 加粗 SAPPORO */
-            letter-spacing: 0.4em;
+            font-weight: 600;
+            letter-spacing: 0.3em;
         }
 
-        /* 手機版資訊欄位維持方形且對齊 */
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -153,45 +146,61 @@
         .info-box {
             background: rgba(255, 255, 255, 0.4);
             border-radius: 20px;
-            padding: 20px;
+            padding: 16px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             display: flex;
             flex-direction: column;
             justify-content: center;
-            aspect-ratio: 1 / 0.85; /* 維持近乎方形 */
+            align-items: center; 
+            text-align: center;
+            aspect-ratio: 1 / 0.85;
+            overflow: hidden; 
         }
 
         .input-label {
-            font-size: 10px;
-            color: #999;
+            font-size: 9px;
+            color: #AAA;
             text-transform: uppercase;
             letter-spacing: 0.2em;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .input-box {
             border-bottom: 1px solid rgba(0,0,0,0.03);
             padding-bottom: 8px;
+            width: 100%;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s;
         }
         .input-box:hover { border-color: var(--muji-red); }
+
+        input[type="datetime-local"] {
+            appearance: none;
+            -webkit-appearance: none;
+            text-align: center;
+            width: 100%;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            display: block;
+        }
 
         #cityModal {
             display: none;
             position: fixed;
             inset: 0;
             z-index: 100;
-            background: rgba(245, 244, 240, 0.85);
+            background: rgba(245, 244, 240, 0.9);
             backdrop-filter: blur(20px);
         }
 
+        .animate-muji { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-muji { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1); }
     </style>
 </head>
 <body>
@@ -200,25 +209,25 @@
         <div id="bg2" class="bg-layer"></div>
     </div>
 
-    <header class="w-full max-w-5xl flex justify-between items-center px-8 py-10 z-10">
+    <header class="w-full max-w-5xl flex justify-between items-center px-8 py-8 z-10">
         <span id="currentTime" class="text-[10px] font-medium tracking-[0.4em] text-gray-400 uppercase">Archive — 00:00:00</span>
     </header>
 
     <main class="w-full max-w-2xl flex flex-col items-center z-10 px-6">
-        <!-- 階段性里程碑區域 -->
-        <div id="milestoneArea" class="h-24 flex flex-col items-center justify-center mb-4 w-full text-center">
+        <div id="milestoneArea" class="h-20 flex flex-col items-center justify-center mb-4 w-full text-center">
             <!-- JS 動態填充 -->
         </div>
 
-        <div class="text-center mb-8 w-full">
-            <div class="flex flex-col items-center justify-center gap-3">
-                <span id="destIcon" class="text-3xl opacity-80">🇯🇵</span>
-                <h1 id="mainDestTitle" class="main-title text-4xl text-gray-900 uppercase">Sapporo</h1>
+        <div class="text-center mb-6 w-full flex flex-col items-center">
+            <!-- 國家名稱已刪除 -->
+            <div class="flex items-center justify-center gap-3 mt-4">
+                <span id="destIcon" class="text-2xl opacity-80">🇯🇵</span>
+                <h1 id="mainDestTitle" class="main-title text-3xl text-gray-900 uppercase">Sapporo</h1>
             </div>
-            <p id="localTimeDisplay" class="text-[9px] text-gray-400 tracking-[0.4em] mt-6 uppercase font-bold opacity-60">Current / --:--:--</p>
+            <p id="localTimeDisplay" class="text-[9px] text-gray-400 tracking-[0.4em] mt-4 uppercase font-bold opacity-60">Current / --:--:--</p>
         </div>
 
-        <div class="countdown-wrapper mb-10">
+        <div class="countdown-wrapper mb-6">
             <div class="breathing-aura"></div>
             <div class="countdown-circle">
                 <svg class="countdown-svg" viewBox="0 0 360 360">
@@ -232,7 +241,7 @@
                         <span class="absolute -right-6 bottom-4 text-[10px] font-bold text-gray-300 uppercase tracking-widest">Days</span>
                     </div>
                     
-                    <div class="flex items-center gap-6 mt-4 opacity-40">
+                    <div class="flex items-center gap-6 mt-2 opacity-40">
                         <div class="flex flex-col items-center">
                             <span id="hoursUnit" class="text-sm font-light">00</span>
                             <span class="text-[6px] uppercase tracking-tighter">Hrs</span>
@@ -250,16 +259,16 @@
             </div>
         </div>
 
-        <div class="glass-card w-full p-8 md:p-12 mb-20">
+        <div class="glass-card w-full p-8 md:p-10 mb-20 flex flex-col items-center">
             <!-- 頂部輸入區 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+            <div class="w-full flex flex-col gap-6 mb-10 text-center">
                 <div id="openCityModal" class="input-box">
                     <span class="input-label">Destination</span>
-                    <div id="selectedCityText" class="text-lg font-normal text-gray-800 tracking-wide">Sapporo, Japan</div>
+                    <div id="selectedCityText" class="text-base font-medium text-gray-800 tracking-wide">Sapporo, Japan</div>
                 </div>
                 <div class="input-box">
                     <span class="input-label">Departure Date</span>
-                    <input type="datetime-local" id="dateInput" class="text-lg font-normal text-gray-800 bg-transparent outline-none w-full">
+                    <input type="datetime-local" id="dateInput" class="text-base font-medium text-gray-800 outline-none">
                 </div>
             </div>
 
@@ -271,15 +280,15 @@
                         <span id="weatherIcon" class="text-xl">☀️</span>
                         <span id="weatherTemp" class="text-sm font-medium text-gray-700">--°C</span>
                     </div>
-                    <p id="weatherDetails" class="text-[8px] text-gray-400 tracking-wider mt-2 uppercase">Stable Atmosphere</p>
+                    <p id="weatherDetails" class="text-[7px] text-gray-400 tracking-widest mt-2 uppercase">Stable Atmosphere</p>
                 </div>
                 <div class="info-box">
                     <span class="input-label">Currency</span>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-xl">⚖️</span>
-                        <span id="currencyRef" class="text-sm font-medium text-gray-700">--</span>
+                    <div class="flex flex-col items-center justify-center mt-1">
+                        <span class="text-lg">⚖️</span>
+                        <span id="currencyRef" class="text-[11px] leading-tight font-medium text-gray-700 mt-1">--</span>
                     </div>
-                    <p id="localTzInfo" class="text-[8px] text-gray-400 tracking-wider mt-2 uppercase">Exchange Rate</p>
+                    <p class="text-[7px] text-gray-400 tracking-widest mt-2 uppercase">Exchange Rate</p>
                 </div>
             </div>
         </div>
@@ -288,11 +297,11 @@
     <!-- 選擇視窗 -->
     <div id="cityModal" class="items-center justify-center p-8">
         <div class="w-full max-w-lg animate-muji">
-            <div class="flex justify-between items-center mb-12">
-                <h2 class="text-lg font-medium tracking-[0.4em] text-gray-800 uppercase">Selection</h2>
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-sm font-medium tracking-[0.4em] text-gray-800 uppercase">Selection</h2>
                 <button id="closeCityModal" class="text-gray-400 hover:text-black transition-colors text-xl font-thin">✕</button>
             </div>
-            <div class="flex gap-8 mb-8 overflow-x-auto no-scrollbar border-b border-gray-100 pb-3" id="modalTabs"></div>
+            <div class="flex gap-8 mb-8 overflow-x-auto no-scrollbar border-b border-gray-100 pb-2" id="modalTabs"></div>
             <div class="max-h-[50vh] overflow-y-auto no-scrollbar" id="cityList"></div>
         </div>
     </div>
@@ -305,17 +314,17 @@
 
         const destinations = {
             "Japan": [
-                { name: "Sapporo", full: "Sapporo, Japan", icon: "🇯🇵", query: "sapporo,minimal,zen", tz: 9, cur: "JPY" },
-                { name: "Kyoto", full: "Kyoto, Japan", icon: "🇯🇵", query: "kyoto,zen,shrine", tz: 9, cur: "JPY" },
-                { name: "Naoshima", full: "Naoshima, Japan", icon: "🇯🇵", query: "naoshima,museum", tz: 9, cur: "JPY" }
+                { name: "Sapporo", country: "Japan", full: "Sapporo, Japan", icon: "🇯🇵", query: "sapporo,minimal,zen", tz: 9, cur: "JPY" },
+                { name: "Kyoto", country: "Japan", full: "Kyoto, Japan", icon: "🇯🇵", query: "kyoto,zen,shrine", tz: 9, cur: "JPY" },
+                { name: "Naoshima", country: "Japan", full: "Naoshima, Japan", icon: "🇯🇵", query: "naoshima,museum", tz: 9, cur: "JPY" }
             ],
             "Asia": [
-                { name: "Taipei", full: "Taipei, Taiwan", icon: "🇹🇼", query: "taipei,101,minimal", tz: 8, cur: "TWD" },
-                { name: "Seoul", full: "Seoul, Korea", icon: "🇰🇷", query: "seoul,hanok,minimal", tz: 9, cur: "KRW" }
+                { name: "Taipei", country: "Taiwan", full: "Taipei, Taiwan", icon: "🇹🇼", query: "taipei,101,minimal", tz: 8, cur: "TWD" },
+                { name: "Seoul", country: "Korea", full: "Seoul, Korea", icon: "🇰🇷", query: "seoul,hanok,minimal", tz: 9, cur: "KRW" }
             ],
             "Europe": [
-                { name: "Copenhagen", full: "Copenhagen, Denmark", icon: "🇩🇰", query: "copenhagen,nordic,design", tz: 1, cur: "DKK" },
-                { name: "Helsinki", full: "Helsinki, Finland", icon: "🇫🇮", query: "helsinki,minimalism", tz: 2, cur: "EUR" }
+                { name: "Copenhagen", country: "Denmark", full: "Copenhagen, Denmark", icon: "🇩🇰", query: "copenhagen,nordic,design", tz: 1, cur: "DKK" },
+                { name: "Helsinki", country: "Finland", full: "Helsinki, Finland", icon: "🇫🇮", query: "helsinki,minimalism", tz: 2, cur: "EUR" }
             ]
         };
 
@@ -364,7 +373,6 @@
             el.m.innerText = m.toString().padStart(2, '0');
             el.s.innerText = s.toString().padStart(2, '0');
             
-            // 進度條邏輯（假設基準為 100 天）
             const total = 100 * 86400000;
             const p = Math.max(0, Math.min(100, (1 - diff/total) * 100));
             document.getElementById('progressBar').style.strokeDashoffset = 1100 - (p/100 * 1100);
@@ -375,37 +383,17 @@
             const area = document.getElementById('milestoneArea');
             let zh = "", en = "";
             
-            if (d === 0) {
-                zh = "就是今天！帶上好心情出發吧";
-                en = "Today is the day! Let's go with a big smile.";
-            } else if (d === 1) {
-                zh = "明天就要出發了，檢查一下護照喔！✨";
-                en = "Leaving tomorrow! Don't forget your passport.";
-            } else if (d <= 5) {
-                zh = "快到了！這幾天先研究當地必吃美食 🍱";
-                en = "Almost there! Time to check out local food spots.";
-            } else if (d <= 10) {
-                zh = "倒數 10 天內，可以開始慢慢收拾行李囉 🎒";
-                en = "Within 10 days. Perfect time to start packing.";
-            } else if (d <= 15) {
-                zh = "剩下約兩週！確認一下必逛的景點與交通 🗺️";
-                en = "Two weeks left! Double-check your itinerary.";
-            } else if (d <= 20) {
-                zh = "倒數 20 天內，是不是已經心不在焉了呢？";
-                en = "Within 20 days. Already dreaming of your trip?";
-            } else if (d <= 30) {
-                zh = "進入倒數一個月，期待與最美的風景相遇 🌱";
-                en = "Under 30 days. A beautiful journey awaits.";
-            } else {
-                zh = "「Travel to the World」";
-                en = "Simple is not just simple, it's a way of living.";
-            }
+            if (d === 0) { zh = "就是今天！帶上好心情出發吧"; en = "Today is the day! Let's go."; }
+            else if (d === 1) { zh = "明天就要出發了，檢查一下護照喔！✨"; en = "Leaving tomorrow! Check your passport."; }
+            else if (d <= 5) { zh = "快到了！這幾天先研究當地必吃美食 🍱"; en = "Almost there! Search for local food."; }
+            else if (d <= 15) { zh = "剩下兩週左右，期待與最美的風景相遇 🌱"; en = "A few weeks left. Ready for your journey?"; }
+            else { zh = "「Simple is not just simple」"; en = "A way of living gracefully."; }
             
             if (area.getAttribute('data-content') !== zh) {
                 area.innerHTML = `
                     <div class="milestone-text animate-muji flex flex-col items-center gap-2">
-                        <p class="text-base font-medium tracking-[0.2em] text-gray-700">${zh}</p>
-                        <p class="text-[8px] text-gray-400 tracking-[0.4em] uppercase">${en}</p>
+                        <p class="text-sm font-medium tracking-[0.2em] text-gray-700">${zh}</p>
+                        <p class="text-[7px] text-gray-400 tracking-[0.4em] uppercase">${en}</p>
                     </div>
                 `;
                 area.setAttribute('data-content', zh);
@@ -417,11 +405,11 @@
             const list = document.getElementById('cityList');
             Object.keys(destinations).forEach((reg, i) => {
                 const btn = document.createElement('button');
-                btn.className = `whitespace-nowrap pb-2 text-[10px] font-bold uppercase tracking-widest ${i===0?'text-black border-b-2 border-black':'text-gray-300'}`;
+                btn.className = `whitespace-nowrap pb-1 text-[9px] font-bold uppercase tracking-widest ${i===0?'text-black border-b border-black':'text-gray-300'}`;
                 btn.innerText = reg;
                 btn.onclick = () => {
-                    document.querySelectorAll('#modalTabs button').forEach(b => { b.classList.remove('text-black', 'border-b-2', 'border-black'); b.classList.add('text-gray-300'); });
-                    btn.classList.add('text-black', 'border-b-2', 'border-black');
+                    document.querySelectorAll('#modalTabs button').forEach(b => { b.classList.remove('text-black', 'border-b', 'border-black'); b.classList.add('text-gray-300'); });
+                    btn.classList.add('text-black', 'border-b', 'border-black');
                     renderCities(reg);
                 };
                 tabs.appendChild(btn);
@@ -430,10 +418,10 @@
                 list.innerHTML = "";
                 destinations[reg].forEach(city => {
                     const item = document.createElement('div');
-                    item.className = "flex justify-between items-center py-6 border-b border-gray-50 cursor-pointer group";
+                    item.className = "flex justify-between items-center py-5 border-b border-gray-50 cursor-pointer group";
                     item.innerHTML = `
-                        <span class="text-sm font-normal text-gray-500 group-hover:text-black transition-colors tracking-widest uppercase">${city.name}</span>
-                        <span class="text-[8px] text-gray-300 group-hover:text-gray-500 tracking-tighter uppercase">Select</span>
+                        <span class="text-xs font-normal text-gray-500 group-hover:text-black transition-colors tracking-widest uppercase">${city.name}</span>
+                        <span class="text-[7px] text-gray-300 group-hover:text-gray-500 tracking-tighter uppercase">Pick</span>
                     `;
                     item.onclick = () => selectCity(city);
                     list.appendChild(item);
@@ -467,7 +455,7 @@
         function init() {
             initModal();
             selectCity(destinations["Japan"][0]);
-            const d = new Date(); d.setDate(d.getDate() + 30);
+            const d = new Date(); d.setDate(d.getDate() + 30); d.setHours(10, 0);
             document.getElementById('dateInput').value = d.toISOString().slice(0, 16);
             targetDate = new Date(document.getElementById('dateInput').value);
             setInterval(updateClock, 1000);
