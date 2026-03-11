@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Countdown - MUJI Professional</title>
+    <title>Travel Countdown - MUJI Hand-crafted Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@200;300;400;500;700&family=Inter:wght@200;300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --muji-beige: #f4f1ea;
+            --muji-beige-dark: #ece9e0; /* 稍深的米色，用於漸層 */
             --muji-red: #7f2029;
-            --muji-text: #333333;
-            --muji-teal: #006564;
+            --muji-text: #444444;
+            --muji-gray: #8c8c8c;
+            --aura-color: rgba(200, 190, 170, 0.2); /* 調整為溫暖的米黃光暈 */
         }
 
         body {
@@ -21,13 +23,19 @@
             margin: 0;
             overflow-x: hidden;
             min-height: 100vh;
+            /* 手刷感背景紋理 */
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px),
+                url("https://www.transparenttextures.com/patterns/natural-paper.png");
+            background-blend-mode: soft-light;
         }
 
         .bg-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
-            background-color: #e0ddd5;
+            background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.02) 100%);
         }
 
         .bg-layer {
@@ -35,87 +43,196 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background-size: cover;
             background-position: center;
-            transition: opacity 2s ease-in-out;
+            transition: opacity 3s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
+            filter: sepia(20%) contrast(90%) brightness(105%) grayscale(15%);
         }
 
-        .bg-layer.active { opacity: 0.6; }
+        .bg-layer.active { opacity: 0.35; }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 24px;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px -20px rgba(100, 90, 80, 0.05);
+        }
+
+        .countdown-wrapper {
+            position: relative;
+            padding: 50px;
         }
 
         .countdown-circle {
             position: relative;
-            width: 220px;
-            height: 220px;
-        }
-        @media (min-width: 640px) {
-            .countdown-circle {
-                width: 260px;
-                height: 260px;
-            }
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            /* 米色漸層，維持原本的質感 */
+            background: linear-gradient(135deg, var(--muji-beige), var(--muji-beige-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 35px 70px -15px rgba(130, 120, 110, 0.12),
+                0 15px 30px -10px rgba(0,0,0,0.03),
+                inset 0 0 40px rgba(255,255,255,0.5),
+                inset 0 -5px 15px rgba(0,0,0,0.01);
+            z-index: 2;
         }
 
-        .countdown-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        @media (min-width: 640px) {
+            .countdown-circle { width: 340px; height: 340px; }
+        }
+
+        .breathing-aura {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 118%;
+            height: 118%;
+            background: radial-gradient(circle, var(--aura-color) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 1;
+            animation: breath 7s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes breath {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.7; }
+        }
+
+        .countdown-svg { 
+            position: absolute;
+            top: 0; left: 0;
+            transform: rotate(-90deg); 
+            width: 100%; height: 100%; 
+            pointer-events: none;
+        }
+
         .countdown-progress {
             fill: none;
             stroke: var(--muji-red);
-            stroke-width: 3;
+            stroke-width: 2; 
             stroke-linecap: round;
-            transition: stroke-dashoffset 1s linear;
+            transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.6;
         }
+
+        .main-display {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .days-number-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 180px;
+        }
+
+        #daysLeft {
+            font-size: 6.5rem;
+            font-weight: 200;
+            letter-spacing: -0.02em;
+            color: #2c2c2c;
+            line-height: 1;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        @media (min-width: 640px) {
+            #daysLeft { font-size: 8rem; }
+        }
+
+        .days-label-floating {
+            position: absolute;
+            right: -1.2rem;
+            bottom: 1.2rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #a59b8d;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0.8;
+        }
+
+        .time-units-grid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.8rem;
+            margin-top: 1.8rem;
+        }
+
+        .unit-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .unit-value {
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: #8c8c8c;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .unit-name {
+            font-size: 7px;
+            color: #b5ada3;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            margin-top: 5px;
+            font-weight: 700;
+        }
+
+        .dot-sep {
+            color: #dcd7ce;
+            font-size: 10px;
+            margin-top: -12px;
+        }
+
+        .input-label {
+            font-size: 9px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .input-box {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 14px;
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+        .input-box:hover { border-color: var(--muji-red); opacity: 0.8; }
 
         #cityModal {
             display: none;
             position: fixed;
             inset: 0;
-            z-index: 50;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(8px);
+            z-index: 100;
+            background: rgba(244, 241, 234, 0.7);
+            backdrop-filter: blur(25px);
         }
 
-        .city-tab-active {
-            border-bottom: 2px solid var(--muji-teal);
-            color: var(--muji-teal);
-        }
-
-        .input-box {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .input-box:hover { background: rgba(0,0,0,0.02); }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #d1d1d1; border-radius: 10px; }
-        
-        .milestone-badge {
-            animation: fadeInDown 0.8s ease-out;
-        }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-10px); }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        input[type="datetime-local"] {
-            -webkit-appearance: none;
-            appearance: none;
-            min-height: 1.2em;
-            text-align: left;
-            width: 100%;
-            background: transparent;
-            border: none;
-            padding: 0;
-            margin: 0;
-            display: block;
-        }
+        .animate-muji { animation: fadeInUp 1.2s cubic-bezier(0.23, 1, 0.32, 1); }
         
-        input[type="datetime-local"]::-webkit-date-and-time-value {
-            text-align: left;
-            margin: 0;
+        .milestone-text {
+            transition: all 0.8s ease;
         }
     </style>
 </head>
@@ -125,133 +242,131 @@
         <div id="bg2" class="bg-layer"></div>
     </div>
 
-    <!-- 頂部導覽 -->
-    <header class="w-full max-w-5xl flex justify-between items-center px-4 md:px-6 py-4 md:py-6 z-10">
-        <div class="flex flex-col text-left">
-            <span id="currentTime" class="text-[10px] md:text-xs font-light tracking-widest text-gray-500">00:00:00</span>
-        </div>
+    <header class="w-full max-w-5xl flex justify-between items-center px-8 py-10 z-10">
+        <span id="currentTime" class="text-[9px] font-medium tracking-[0.5em] text-gray-400 uppercase">Archive — 00:00:00</span>
     </header>
 
-    <main class="w-full max-w-2xl flex flex-col items-center z-10 px-4 mt-4 md:mt-8">
-        
-        <!-- 里程碑彩蛋區 (改為階段性中英顯示) -->
-        <div id="milestoneArea" class="h-20 md:h-24 flex flex-col items-center justify-center mb-4 md:mb-8 w-full">
+    <main class="w-full max-w-2xl flex flex-col items-center z-10 px-6">
+        <!-- 階段性里程碑區域 -->
+        <div id="milestoneArea" class="h-24 flex flex-col items-center justify-center mb-6 w-full text-center">
+            <!-- 由 JS 動態填充 -->
         </div>
 
-        <!-- 目的地 -->
-        <div class="text-center mb-6 md:mb-10 w-full">
-            <div class="flex items-center justify-center gap-2 md:gap-4">
-                <span id="destIcon" class="text-3xl md:text-4xl drop-shadow-sm">🇯🇵</span>
-                <h1 id="mainDestTitle" class="text-3xl md:text-4xl font-light tracking-tight text-gray-800">Sapporo</h1>
+        <div class="text-center mb-12 w-full">
+            <div class="flex items-center justify-center gap-5">
+                <span id="destIcon" class="text-2xl opacity-60 filter grayscale">🇯🇵</span>
+                <h1 id="mainDestTitle" class="text-3xl font-extralight tracking-[0.3em] text-gray-800 uppercase">Sapporo</h1>
             </div>
-            <div id="localTimeDisplay" class="text-[9px] md:text-[10px] text-gray-400 tracking-[0.2em] mt-2 md:mt-3 uppercase">
-                Local Time: --:--:--
+            <p id="localTimeDisplay" class="text-[8px] text-gray-400 tracking-[0.5em] mt-5 uppercase font-bold opacity-70">Current Location / --:--:--</p>
+        </div>
+
+        <div class="countdown-wrapper mb-16">
+            <div class="breathing-aura"></div>
+            <div class="countdown-circle">
+                <svg class="countdown-svg" viewBox="0 0 340 340">
+                    <circle class="fill-none stroke-black/[0.03]" cx="170" cy="170" r="166" stroke-width="0.5"></circle>
+                    <circle id="progressBar" class="countdown-progress" cx="170" cy="170" r="166" stroke-dasharray="1043" stroke-dashoffset="1043"></circle>
+                </svg>
+                
+                <div class="main-display">
+                    <div class="days-number-wrapper">
+                        <div id="daysLeft">00</div>
+                        <span class="days-label-floating">Days</span>
+                    </div>
+                    
+                    <div class="time-units-grid">
+                        <div class="unit-item">
+                            <span id="hoursUnit" class="unit-value">00</span>
+                            <span class="unit-name">Hour</span>
+                        </div>
+                        <span class="dot-sep">/</span>
+                        <div class="unit-item">
+                            <span id="minsUnit" class="unit-value">00</span>
+                            <span class="unit-name">Min</span>
+                        </div>
+                        <span class="dot-sep">/</span>
+                        <div class="unit-item">
+                            <span id="secsUnit" class="unit-value">00</span>
+                            <span class="unit-name">Sec</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 倒數圓圈 -->
-        <div class="countdown-circle mb-8 md:mb-12 flex items-center justify-center">
-            <svg class="countdown-svg absolute top-0 left-0" viewBox="0 0 260 260">
-                <circle class="fill-none stroke-black/5" cx="130" cy="130" r="125" stroke-width="2"></circle>
-                <circle id="progressBar" class="countdown-progress" cx="130" cy="130" r="125" stroke-dasharray="785" stroke-dashoffset="785"></circle>
-            </svg>
-            <div class="text-center">
-                <div id="daysLeft" class="text-6xl md:text-8xl font-bold tracking-tighter text-gray-800 leading-none">00</div>
-                <div class="text-[8px] md:text-[9px] text-gray-400 tracking-[0.6em] mt-2 md:mt-4 font-bold uppercase">Days to go</div>
-                <div id="timeLeft" class="text-[9px] md:text-[10px] text-gray-500 mt-4 md:mt-5 font-mono tracking-[0.2em] bg-white/80 border border-black/5 px-3 md:px-4 py-1 rounded-full inline-block">00:00:00</div>
-            </div>
-        </div>
-
-        <!-- 下方資訊面板 -->
-        <div class="glass-card w-full p-6 md:p-8 mb-20 shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                <div id="openCityModal" class="input-box border-b border-gray-100 pb-3 flex flex-col items-start justify-end">
-                    <label class="text-[9px] text-gray-400 tracking-widest uppercase font-bold block mb-1 text-left">Destination</label>
-                    <div id="selectedCityText" class="text-base md:text-lg font-medium text-gray-800 leading-none text-left w-full">Sapporo, Japan</div>
+        <div class="glass-card w-full p-12 md:p-14 mb-24">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div id="openCityModal" class="input-box flex flex-col items-start">
+                    <span class="input-label">Destination</span>
+                    <div id="selectedCityText" class="text-lg font-light text-gray-700 tracking-[0.1em]">Sapporo, Japan</div>
                 </div>
-                <div class="border-b border-gray-100 pb-3 flex flex-col items-start justify-end">
-                    <label class="text-[9px] text-gray-400 tracking-widest uppercase font-bold block mb-1 text-left">Departure</label>
-                    <input type="datetime-local" id="dateInput" class="text-base md:text-lg font-medium text-gray-800 leading-none">
+                <div class="input-box flex flex-col items-start">
+                    <span class="input-label">Departure</span>
+                    <input type="datetime-local" id="dateInput" class="text-lg font-light text-gray-700 bg-transparent outline-none w-full">
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-8 md:mt-10">
-                <div class="bg-black/[0.03] p-4 md:p-5 rounded-2xl border border-white/50">
-                    <div class="flex items-center gap-2 mb-2 md:mb-3">
-                        <span class="text-base md:text-lg" id="weatherIcon">☀️</span>
-                        <span class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gray-400">Local Weather</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-14">
+                <div class="bg-white/30 p-7 rounded-[30px] border border-white/40">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span id="weatherIcon" class="text-lg opacity-50">☀️</span>
+                        <span class="text-[8px] font-bold uppercase tracking-[0.3em] text-gray-400">Environment</span>
                     </div>
-                    <div class="space-y-1 text-left">
-                        <p id="weatherTemp" class="text-xs md:text-sm font-medium text-gray-800">--°C / --</p>
-                        <p id="weatherDetails" class="text-[9px] md:text-[10px] text-gray-500 leading-relaxed uppercase tracking-wider">Loading...</p>
-                    </div>
+                    <p id="weatherTemp" class="text-sm font-light text-gray-600">--°C / Humidity --%</p>
+                    <p id="weatherDetails" class="text-[8px] text-gray-300 tracking-[0.3em] mt-2 uppercase">Syncing Atmosphere...</p>
                 </div>
-                <div class="bg-black/[0.03] p-4 md:p-5 rounded-2xl border border-white/50">
-                    <div class="flex items-center gap-2 mb-2 md:mb-3">
-                        <span class="text-base md:text-lg">💱</span>
-                        <span class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gray-400">Financial & Time</span>
+                <div class="bg-white/30 p-7 rounded-[30px] border border-white/40">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-lg opacity-50">⚖️</span>
+                        <span class="text-[8px] font-bold uppercase tracking-[0.3em] text-gray-400">Exchange</span>
                     </div>
-                    <div class="space-y-1 text-left">
-                        <p id="currencyRef" class="text-xs md:text-sm font-medium text-gray-800">--</p>
-                        <p id="localTzInfo" class="text-[9px] md:text-[10px] text-gray-500 leading-relaxed uppercase tracking-wider">Timezone: --</p>
-                    </div>
+                    <p id="currencyRef" class="text-sm font-light text-gray-600">--</p>
+                    <p id="localTzInfo" class="text-[8px] text-gray-300 tracking-[0.3em] mt-2 uppercase">Timezone Index</p>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="cityModal" class="items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-            <div class="p-4 md:p-6 border-b border-gray-50 flex justify-between items-center">
-                <h2 class="text-base md:text-lg font-bold text-gray-800">Select Destination</h2>
-                <button id="closeCityModal" class="text-gray-400 hover:text-gray-800 p-2">✕</button>
+    <div id="cityModal" class="items-center justify-center p-8">
+        <div class="w-full max-w-lg animate-muji">
+            <div class="flex justify-between items-center mb-16">
+                <h2 class="text-xl font-extralight tracking-[0.5em] text-gray-700 uppercase">Selection</h2>
+                <button id="closeCityModal" class="text-gray-300 hover:text-black transition-colors text-2xl font-thin">✕</button>
             </div>
-            <div class="flex overflow-x-auto bg-gray-50 px-4 md:px-6 py-2 gap-4 md:gap-6 no-scrollbar" id="modalTabs"></div>
-            <div class="p-4 md:p-8 max-h-[50vh] md:max-h-[60vh] overflow-y-auto" id="cityList"></div>
+            <div class="flex gap-10 mb-10 overflow-x-auto no-scrollbar border-b border-gray-100 pb-3" id="modalTabs"></div>
+            <div class="max-h-[45vh] overflow-y-auto no-scrollbar" id="cityList"></div>
         </div>
     </div>
 
     <script>
         let targetDate = new Date();
         let currentCity = null;
-
-        const destinations = {
-            "Japan: Hokkaido": [
-                { name: "Sapporo", full: "Sapporo, Japan", icon: "🇯🇵", query: "sapporo,japan", tz: 9, cur: "JPY" },
-                { name: "Otaru", full: "Otaru, Japan", icon: "🇯🇵", query: "otaru,hokkaido", tz: 9, cur: "JPY" },
-                { name: "Furano", full: "Furano, Japan", icon: "🇯🇵", query: "furano,lavender", tz: 9, cur: "JPY" }
-            ],
-            "Japan: Honshu": [
-                { name: "Tokyo", full: "Tokyo, Japan", icon: "🇯🇵", query: "tokyo,shibuya", tz: 9, cur: "JPY" },
-                { name: "Kyoto", full: "Kyoto, Japan", icon: "🇯🇵", query: "kyoto,pagoda", tz: 9, cur: "JPY" },
-                { name: "Osaka", full: "Osaka, Japan", icon: "🇯🇵", query: "osaka,dotonbori", tz: 9, cur: "JPY" }
-            ],
-            "East Asia": [
-                { name: "Seoul", full: "Seoul, Korea", icon: "🇰🇷", query: "seoul,city", tz: 9, cur: "KRW" },
-                { name: "Taipei", full: "Taipei, Taiwan", icon: "🇹🇼", query: "taipei,101", tz: 8, cur: "TWD" },
-                { name: "Hong Kong", full: "Hong Kong", icon: "🇭🇰", query: "hongkong,skyline", tz: 8, cur: "HKD" }
-            ],
-            "Europe": [
-                { name: "Paris", full: "Paris, France", icon: "🇫🇷", query: "paris,eiffel", tz: 1, cur: "EUR" },
-                { name: "London", full: "London, UK", icon: "🇬🇧", query: "london,bridge", tz: 0, cur: "GBP" }
-            ],
-            "America": [
-                { name: "New York", full: "New York, USA", icon: "🇺🇸", query: "newyork,skyline", tz: -5, cur: "USD" },
-                { name: "Los Angeles", full: "LA, USA", icon: "🇺🇸", query: "losangeles,hollywood", tz: -8, cur: "USD" }
-            ]
-        };
-
         const bgLayers = [document.getElementById('bg1'), document.getElementById('bg2')];
         let bgIdx = 0;
 
+        const destinations = {
+            "Japan": [
+                { name: "Sapporo", full: "Sapporo, Japan", icon: "🇯🇵", query: "sapporo,winter,minimal", tz: 9, cur: "JPY" },
+                { name: "Kyoto", full: "Kyoto, Japan", icon: "🇯🇵", query: "kyoto,zen,minimal", tz: 9, cur: "JPY" },
+                { name: "Naoshima", full: "Naoshima, Japan", icon: "🇯🇵", query: "naoshima,art", tz: 9, cur: "JPY" }
+            ],
+            "Asia": [
+                { name: "Taipei", full: "Taipei, Taiwan", icon: "🇹🇼", query: "taipei,minimal,modern", tz: 8, cur: "TWD" },
+                { name: "Seoul", full: "Seoul, Korea", icon: "🇰🇷", query: "seoul,minimal", tz: 9, cur: "KRW" }
+            ],
+            "Europe": [
+                { name: "Copenhagen", full: "Copenhagen, Denmark", icon: "🇩🇰", query: "copenhagen,interior", tz: 1, cur: "DKK" },
+                { name: "Helsinki", full: "Helsinki, Finland", icon: "🇫🇮", query: "helsinki,architecture", tz: 2, cur: "EUR" }
+            ]
+        };
+
         function updateClock() {
             const now = new Date();
-            document.getElementById('currentTime').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
-            
+            document.getElementById('currentTime').innerText = `Archive — ${now.toLocaleTimeString('en-GB', { hour12: false })}`;
             if (currentCity) {
                 const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
                 const local = new Date(utc + (3600000 * currentCity.tz));
-                document.getElementById('localTimeDisplay').innerText = `Local Time: ${local.toLocaleTimeString('en-GB', { hour12: false })} (GMT${currentCity.tz >= 0 ? '+' : ''}${currentCity.tz})`;
+                document.getElementById('localTimeDisplay').innerText = `Current Location / ${local.toLocaleTimeString('en-GB', { hour12: false })} (GMT${currentCity.tz>=0?'+':''}${currentCity.tz})`;
             }
         }
 
@@ -270,13 +385,11 @@
 
         function updateCountdown() {
             const diff = targetDate - new Date();
-            const daysArea = document.getElementById('daysLeft');
-            const timeArea = document.getElementById('timeLeft');
+            const el = { d: document.getElementById('daysLeft'), h: document.getElementById('hoursUnit'), m: document.getElementById('minsUnit'), s: document.getElementById('secsUnit') };
             
             if (diff <= 0) {
-                daysArea.innerText = "00";
-                timeArea.innerText = "LET'S GO!";
-                setProgress(100);
+                Object.values(el).forEach(e => e.innerText = "00");
+                document.getElementById('progressBar').style.strokeDashoffset = 1043;
                 checkMilestone(0);
                 return;
             }
@@ -286,25 +399,21 @@
             const m = Math.floor((diff % 3600000) / 60000);
             const s = Math.floor((diff % 60000) / 1000);
 
-            daysArea.innerText = d.toString().padStart(2, '0');
-            timeArea.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            el.d.innerText = d.toString().padStart(2, '0');
+            el.h.innerText = h.toString().padStart(2, '0');
+            el.m.innerText = m.toString().padStart(2, '0');
+            el.s.innerText = s.toString().padStart(2, '0');
             
-            const total = 60 * 86400000;
-            setProgress(Math.max(0, Math.min(100, (1 - diff/total) * 100)));
-            
+            const total = 100 * 86400000;
+            const p = Math.max(0, Math.min(100, (1 - diff/total) * 100));
+            document.getElementById('progressBar').style.strokeDashoffset = 1043 - (p/100 * 1043);
             checkMilestone(d);
-        }
-
-        function setProgress(p) {
-            document.getElementById('progressBar').style.strokeDashoffset = 785 - (p/100 * 785);
         }
 
         function checkMilestone(d) {
             const area = document.getElementById('milestoneArea');
-            let zh = "";
-            let en = "";
+            let zh = "", en = "";
             
-            // 判斷當前天數處於哪個階段 (30/20/15/10/5/1)
             if (d === 0) {
                 zh = "就是今天！帶上好心情出發吧";
                 en = "Today is the day! Let's go with a big smile.";
@@ -331,47 +440,45 @@
                 en = "Simple is not just simple, it's a way of living.";
             }
             
-            // 避免頻繁重複刷新 DOM
-            const currentPhase = d > 30 ? "idle" : (d === 0 ? "today" : `phase-${Math.ceil(d/5)}`);
-            if (area.getAttribute('data-phase') !== currentPhase) {
+            if (area.getAttribute('data-content') !== zh) {
                 area.innerHTML = `
-                    <div class="milestone-badge flex flex-col items-center gap-1">
-                        <p class="text-[10px] md:text-xs text-gray-800 font-medium text-center leading-relaxed px-4">${zh}</p>
-                        <p class="text-[8px] md:text-[9px] text-gray-400 tracking-[0.1em] uppercase italic text-center px-4">${en}</p>
+                    <div class="milestone-text animate-muji flex flex-col items-center gap-3 opacity-60">
+                        <p class="text-sm font-light tracking-[0.3em] text-gray-600">${zh}</p>
+                        <p class="text-[7px] text-gray-300 tracking-[0.5em] uppercase">${en}</p>
                     </div>
                 `;
-                area.setAttribute('data-phase', currentPhase);
+                area.setAttribute('data-content', zh);
             }
         }
 
         function initModal() {
             const tabs = document.getElementById('modalTabs');
             const list = document.getElementById('cityList');
-            const regions = Object.keys(destinations);
-
-            regions.forEach((reg, i) => {
+            Object.keys(destinations).forEach((reg, i) => {
                 const btn = document.createElement('button');
-                btn.className = `whitespace-nowrap px-3 md:px-4 py-2 text-[10px] md:text-xs font-bold uppercase tracking-widest ${i===0?'city-tab-active':'text-gray-400'}`;
+                btn.className = `whitespace-nowrap pb-2 text-[9px] font-bold uppercase tracking-[0.4em] ${i===0?'text-black border-b border-black':'text-gray-300'}`;
                 btn.innerText = reg;
                 btn.onclick = () => {
-                    document.querySelectorAll('#modalTabs button').forEach(b => b.classList.remove('city-tab-active', 'text-gray-400'));
-                    btn.classList.add('city-tab-active');
+                    document.querySelectorAll('#modalTabs button').forEach(b => { b.classList.remove('text-black', 'border-b', 'border-black'); b.classList.add('text-gray-300'); });
+                    btn.classList.add('text-black', 'border-b', 'border-black');
                     renderCities(reg);
                 };
                 tabs.appendChild(btn);
             });
-
             function renderCities(reg) {
                 list.innerHTML = "";
                 destinations[reg].forEach(city => {
                     const item = document.createElement('div');
-                    item.className = "flex justify-between items-center py-3 md:py-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50 px-2 rounded-xl transition-all";
-                    item.innerHTML = `<div><span class="text-xs md:text-sm font-medium text-gray-800">${city.name}</span><span class="ml-2 text-gray-400 text-[10px]">${city.icon}</span></div><span class="text-gray-300">→</span>`;
+                    item.className = "flex justify-between items-center py-7 border-b border-gray-50 cursor-pointer group";
+                    item.innerHTML = `
+                        <span class="text-sm font-light text-gray-500 group-hover:text-black transition-colors tracking-[0.2em] uppercase">${city.name}</span>
+                        <span class="text-[9px] text-gray-200 group-hover:text-gray-400 tracking-widest uppercase transition-all">Explore</span>
+                    `;
                     item.onclick = () => selectCity(city);
                     list.appendChild(item);
                 });
             }
-            renderCities(regions[0]);
+            renderCities(Object.keys(destinations)[0]);
         }
 
         function selectCity(city) {
@@ -379,23 +486,20 @@
             document.getElementById('selectedCityText').innerText = city.full;
             document.getElementById('mainDestTitle').innerText = city.name;
             document.getElementById('destIcon').innerText = city.icon;
-            document.getElementById('localTzInfo').innerText = `Timezone: GMT${city.tz>=0?'+':''}${city.tz} (${city.full.split(',')[1].trim()})`;
-            
-            const curMap = { JPY: "4.6", KRW: "42.5", TWD: "1.0", EUR: "0.029", GBP: "0.025", HKD: "0.24", USD: "0.031" };
+            document.getElementById('localTzInfo').innerText = `Region: ${city.full.split(',')[1]} / Index ${city.tz}`;
+            const curMap = { JPY: "4.67", KRW: "42.1", TWD: "1.0", DKK: "0.22", EUR: "0.029" };
             document.getElementById('currencyRef').innerText = `1 TWD ≈ ${curMap[city.cur] || '0.00'} ${city.cur}`;
-            
             setBackground(city);
             document.getElementById('cityModal').style.display = 'none';
             updateWeather();
         }
 
         function updateWeather() {
-            const w = ["Sunny", "Cloudy", "Windy", "Light Rain", "Clear Sky"];
-            const icon = ["☀️", "☁️", "🍃", "🌧️", "🌙"];
-            const idx = Math.floor(Math.random() * w.length);
-            document.getElementById('weatherIcon').innerText = icon[idx];
-            document.getElementById('weatherTemp').innerText = `${Math.floor(Math.random()*25-5)}°C / ${w[idx]}`;
-            document.getElementById('weatherDetails').innerText = `Humidity: ${Math.floor(Math.random()*40+40)}% | Wind: ${Math.floor(Math.random()*20)}km/h`;
+            const icons = ["☀️", "☁️", "🌫️", "🌦️"];
+            const idx = Math.floor(Math.random() * icons.length);
+            document.getElementById('weatherIcon').innerText = icons[idx];
+            document.getElementById('weatherTemp').innerText = `${Math.floor(Math.random()*10+5)}°C / Humidity ${Math.floor(Math.random()*15+35)}%`;
+            document.getElementById('weatherDetails').innerText = `Atmosphere / Stable · Light Mist`;
         }
 
         document.getElementById('openCityModal').onclick = () => document.getElementById('cityModal').style.display = 'flex';
@@ -403,20 +507,16 @@
 
         function init() {
             initModal();
-            selectCity(destinations["Japan: Hokkaido"][0]);
-            
+            selectCity(destinations["Japan"][0]);
             const d = new Date(); d.setDate(d.getDate() + 30);
-            const iso = d.toISOString().slice(0, 16);
-            document.getElementById('dateInput').value = iso;
-            targetDate = new Date(iso);
-
+            document.getElementById('dateInput').value = d.toISOString().slice(0, 16);
+            targetDate = new Date(document.getElementById('dateInput').value);
             setInterval(updateClock, 1000);
             setInterval(updateCountdown, 1000);
             document.getElementById('dateInput').onchange = (e) => targetDate = new Date(e.target.value);
             updateClock();
             updateCountdown();
         }
-
         window.onload = init;
     </script>
 </body>
