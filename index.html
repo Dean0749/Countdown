@@ -219,7 +219,6 @@
         </div>
 
         <div class="text-center mb-6 w-full flex flex-col items-center">
-            <!-- 國家名稱已刪除 -->
             <div class="flex items-center justify-center gap-3 mt-4">
                 <span id="destIcon" class="text-2xl opacity-80">🇯🇵</span>
                 <h1 id="mainDestTitle" class="main-title text-3xl text-gray-900 uppercase">Sapporo</h1>
@@ -260,7 +259,6 @@
         </div>
 
         <div class="glass-card w-full p-8 md:p-10 mb-20 flex flex-col items-center">
-            <!-- 頂部輸入區 -->
             <div class="w-full flex flex-col gap-6 mb-10 text-center">
                 <div id="openCityModal" class="input-box">
                     <span class="input-label">Destination</span>
@@ -272,7 +270,6 @@
                 </div>
             </div>
 
-            <!-- 底部資訊方格 -->
             <div class="info-grid">
                 <div class="info-box">
                     <span class="input-label">Weather</span>
@@ -294,7 +291,6 @@
         </div>
     </main>
 
-    <!-- 選擇視窗 -->
     <div id="cityModal" class="items-center justify-center p-8">
         <div class="w-full max-w-lg animate-muji">
             <div class="flex justify-between items-center mb-10">
@@ -314,19 +310,61 @@
 
         const destinations = {
             "Japan": [
-                { name: "Sapporo", country: "Japan", full: "Sapporo, Japan", icon: "🇯🇵", query: "sapporo,minimal,zen", tz: 9, cur: "JPY" },
-                { name: "Kyoto", country: "Japan", full: "Kyoto, Japan", icon: "🇯🇵", query: "kyoto,zen,shrine", tz: 9, cur: "JPY" },
-                { name: "Naoshima", country: "Japan", full: "Naoshima, Japan", icon: "🇯🇵", query: "naoshima,museum", tz: 9, cur: "JPY" }
+                { id: "jp-sap", name: "Sapporo", country: "Japan", full: "Sapporo, Japan", icon: "🇯🇵", query: "sapporo,minimal,zen", tz: 9, cur: "JPY" },
+                { id: "jp-kyo", name: "Kyoto", country: "Japan", full: "Kyoto, Japan", icon: "🇯🇵", query: "kyoto,zen,shrine", tz: 9, cur: "JPY" },
+                { id: "jp-nao", name: "Naoshima", country: "Japan", full: "Naoshima, Japan", icon: "🇯🇵", query: "naoshima,museum", tz: 9, cur: "JPY" }
             ],
             "Asia": [
-                { name: "Taipei", country: "Taiwan", full: "Taipei, Taiwan", icon: "🇹🇼", query: "taipei,101,minimal", tz: 8, cur: "TWD" },
-                { name: "Seoul", country: "Korea", full: "Seoul, Korea", icon: "🇰🇷", query: "seoul,hanok,minimal", tz: 9, cur: "KRW" }
+                { id: "as-tpe", name: "Taipei", country: "Taiwan", full: "Taipei, Taiwan", icon: "🇹🇼", query: "taipei,101,minimal", tz: 8, cur: "TWD" },
+                { id: "as-sel", name: "Seoul", country: "Korea", full: "Seoul, Korea", icon: "🇰🇷", query: "seoul,hanok,minimal", tz: 9, cur: "KRW" }
             ],
             "Europe": [
-                { name: "Copenhagen", country: "Denmark", full: "Copenhagen, Denmark", icon: "🇩🇰", query: "copenhagen,nordic,design", tz: 1, cur: "DKK" },
-                { name: "Helsinki", country: "Finland", full: "Helsinki, Finland", icon: "🇫🇮", query: "helsinki,minimalism", tz: 2, cur: "EUR" }
+                { id: "eu-cph", name: "Copenhagen", country: "Denmark", full: "Copenhagen, Denmark", icon: "🇩🇰", query: "copenhagen,nordic,design", tz: 1, cur: "DKK" },
+                { id: "eu-hel", name: "Helsinki", country: "Finland", full: "Helsinki, Finland", icon: "🇫🇮", query: "helsinki,minimalism", tz: 2, cur: "EUR" }
             ]
         };
+
+        // 從 localStorage 讀取儲存的資料
+        function loadSavedData() {
+            const savedCityId = localStorage.getItem('travel_city_id');
+            const savedDate = localStorage.getItem('travel_target_date');
+
+            if (savedCityId) {
+                // 在字典中尋找該城市
+                for (let region in destinations) {
+                    const found = destinations[region].find(c => c.id === savedCityId);
+                    if (found) {
+                        selectCity(found, false); // 第二個參數 false 表示不觸發重新儲存
+                        break;
+                    }
+                }
+            } else {
+                selectCity(destinations["Japan"][0], false);
+            }
+
+            if (savedDate) {
+                document.getElementById('dateInput').value = savedDate;
+                targetDate = new Date(savedDate);
+            } else {
+                const defaultDate = new Date();
+                defaultDate.setDate(defaultDate.getDate() + 30);
+                defaultDate.setHours(10, 0);
+                const dateString = defaultDate.toISOString().slice(0, 16);
+                document.getElementById('dateInput').value = dateString;
+                targetDate = new Date(dateString);
+            }
+        }
+
+        // 儲存資料到 localStorage
+        function saveData() {
+            if (currentCity) {
+                localStorage.setItem('travel_city_id', currentCity.id);
+            }
+            const dateVal = document.getElementById('dateInput').value;
+            if (dateVal) {
+                localStorage.setItem('travel_target_date', dateVal);
+            }
+        }
 
         function updateClock() {
             const now = new Date();
@@ -430,16 +468,20 @@
             renderCities(Object.keys(destinations)[0]);
         }
 
-        function selectCity(city) {
+        function selectCity(city, shouldSave = true) {
             currentCity = city;
             document.getElementById('selectedCityText').innerText = city.full;
             document.getElementById('mainDestTitle').innerText = city.name;
             document.getElementById('destIcon').innerText = city.icon;
+            
             const curMap = { JPY: "4.67", KRW: "42.1", TWD: "1.0", DKK: "0.22", EUR: "0.03" };
             document.getElementById('currencyRef').innerText = `1 TWD ≈ ${curMap[city.cur] || '--'} ${city.cur}`;
+            
             setBackground(city);
             document.getElementById('cityModal').style.display = 'none';
             updateWeather();
+            
+            if (shouldSave) saveData();
         }
 
         function updateWeather() {
@@ -454,13 +496,16 @@
 
         function init() {
             initModal();
-            selectCity(destinations["Japan"][0]);
-            const d = new Date(); d.setDate(d.getDate() + 30); d.setHours(10, 0);
-            document.getElementById('dateInput').value = d.toISOString().slice(0, 16);
-            targetDate = new Date(document.getElementById('dateInput').value);
+            loadSavedData(); // 初始化時從 localStorage 讀取
+            
             setInterval(updateClock, 1000);
             setInterval(updateCountdown, 1000);
-            document.getElementById('dateInput').onchange = (e) => targetDate = new Date(e.target.value);
+            
+            document.getElementById('dateInput').onchange = (e) => {
+                targetDate = new Date(e.target.value);
+                saveData(); // 日期更改時儲存
+            };
+            
             updateClock();
             updateCountdown();
         }
