@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Travel Countdown - MUJI Edition v2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
@@ -18,9 +18,10 @@
             background-color: var(--muji-beige);
             color: var(--muji-text);
             margin: 0;
-            overflow: hidden; /* 鎖定滾動，改用全屏切換 */
-            height: 100vh;
-            touch-action: none;
+            overflow-x: hidden;
+            overflow-y: auto;
+            min-height: 100vh;
+            touch-action: pan-y;
         }
 
         .bg-container {
@@ -41,7 +42,6 @@
 
         .bg-layer.active { opacity: 0.3; }
 
-        /* 沉浸式頂部陰影 */
         .scrim-top {
             position: absolute;
             top: 0; left: 0; right: 0; height: 30vh;
@@ -49,18 +49,18 @@
             z-index: 1;
         }
 
-        /* 核心倒數圓環優化 */
+        /* 倒數容器 */
         .countdown-container {
             position: relative;
-            width: 300px;
-            height: 300px;
+            width: 280px;
+            height: 280px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         @media (min-width: 640px) {
-            .countdown-container { width: 380px; height: 380px; }
+            .countdown-container { width: 360px; height: 360px; }
         }
 
         .progress-ring {
@@ -77,48 +77,39 @@
             transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 玻璃擬態卡片 - 底部對齊 */
+        /* 底部操作卡片 */
         .action-card {
-            background: rgba(255, 255, 255, 0.65);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 40px 40px 0 0;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 32px 24px 48px;
+            width: 100%;
+            padding: 24px 24px calc(24px + env(safe-area-inset-bottom));
             box-shadow: 0 -10px 40px rgba(0,0,0,0.05);
             z-index: 20;
-            transform: translateY(0);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: auto;
         }
 
-        /* 自定義按鈕 */
         .btn-pill {
             background: white;
-            padding: 14px 24px;
+            padding: 12px 20px;
             border-radius: 100px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             border: 1px solid rgba(0,0,0,0.02);
             transition: all 0.2s;
         }
         .btn-pill:active { transform: scale(0.96); background: #fafafa; }
 
-        /* 滑動提示語 */
         .swipe-hint {
-            position: fixed;
-            bottom: 240px;
-            left: 0; right: 0;
-            text-align: center;
             font-size: 8px;
             color: #aaa;
             letter-spacing: 0.5em;
             text-transform: uppercase;
+            margin-top: 16px;
             animation: bounceLeftRight 2s infinite;
         }
 
@@ -130,16 +121,16 @@
         input[type="datetime-local"] {
             border: none;
             background: transparent;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 500;
             width: 100%;
             text-align: center;
             color: #333;
+            padding: 4px 0;
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
-        /* 城市選單優化 */
         #cityDrawer {
             position: fixed;
             inset: 0;
@@ -153,6 +144,18 @@
         }
         #cityDrawer.active { transform: translateY(0); }
 
+        .breathing-aura {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(127, 32, 41, 0.05) 0%, transparent 70%);
+            animation: pulse 4s infinite ease-in-out;
+            z-index: -1;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.6; }
+        }
     </style>
 </head>
 <body>
@@ -162,94 +165,95 @@
         <div id="bg2" class="bg-layer"></div>
     </div>
 
-    <!-- 頂部資訊列 -->
-    <div class="fixed top-12 w-full px-8 flex justify-between items-end z-10">
-        <div>
-            <p id="localTimeDisplay" class="text-[9px] font-bold tracking-[0.3em] opacity-40 uppercase mb-1">Dest Time / --:--:--</p>
-            <div class="flex items-center gap-2">
-                <span id="destIcon" class="text-xl">🇯🇵</span>
-                <h1 id="mainDestTitle" class="text-2xl font-semibold tracking-widest uppercase">Sapporo</h1>
-            </div>
-        </div>
-        <div class="text-right">
-            <span id="currentTime" class="text-[9px] font-bold tracking-widest opacity-40">18:30:45</span>
-        </div>
+    <!-- 頂部輔助資訊 -->
+    <div class="fixed top-6 sm:top-10 w-full px-8 flex justify-between items-center z-10">
+        <p id="localTimeDisplay" class="text-[9px] font-bold tracking-[0.3em] opacity-40 uppercase">Dest / --:--:--</p>
+        <span id="currentTime" class="text-[9px] font-bold tracking-widest opacity-40">--:--:--</span>
     </div>
 
-    <!-- 核心倒數區 (支援手勢左右滑動) -->
-    <main id="swipeArea" class="h-screen w-full flex flex-col items-center justify-center px-6">
-        <div id="milestoneArea" class="h-12 mb-4 text-center">
-            <!-- 情感化語句 -->
-        </div>
-
-        <div class="countdown-container">
-            <div class="breathing-aura"></div>
-            <svg class="progress-ring" viewBox="0 0 340 340">
-                <circle cx="170" cy="170" r="160" fill="none" stroke="rgba(0,0,0,0.02)" stroke-width="2"></circle>
-                <circle id="progressBar" cx="170" cy="170" r="160" fill="none" stroke-width="3" stroke-linecap="round"></circle>
-            </svg>
+    <div class="flex flex-col min-h-screen">
+        <!-- 主要視覺區 -->
+        <main id="swipeArea" class="flex-grow flex flex-col items-center justify-center pt-24 pb-12 px-6">
             
-            <div class="flex flex-col items-center z-10">
-                <div class="relative">
-                    <span id="daysLeft" class="text-[120px] font-light leading-none tracking-tighter">00</span>
-                    <span class="absolute -right-6 bottom-4 text-[10px] font-bold text-gray-300 uppercase tracking-widest">Days</span>
+            <!-- 目的地標題 (移動至圓圈上方) -->
+            <div class="flex flex-col items-center mb-6 animate-muji">
+                <div class="flex items-center gap-3">
+                    <span id="destIcon" class="text-2xl">🇯🇵</span>
+                    <h1 id="mainDestTitle" class="text-2xl sm:text-3xl font-semibold tracking-[0.3em] uppercase">Sapporo</h1>
                 </div>
-                <div class="flex gap-4 opacity-40 mt-2">
-                    <span id="hmsDisplay" class="text-xs font-medium tracking-widest uppercase">00H 00M 00S</span>
+                <div id="milestoneArea" class="h-6 mt-3 text-center">
+                    <!-- 情感語句 -->
                 </div>
             </div>
-        </div>
 
-        <div class="swipe-hint">Swipe to Switch City</div>
-    </main>
-
-    <!-- 底部操作卡片 (符合拇指操作範圍) -->
-    <div class="action-card">
-        <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-8"></div>
-        
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="flex flex-col gap-2">
-                <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest ml-4">Current Weather</span>
-                <div class="btn-pill">
-                    <span id="weatherIcon" class="text-xl">☀️</span>
-                    <div class="flex flex-col">
-                        <span id="weatherTemp" class="text-sm font-semibold">12°C</span>
-                        <span class="text-[8px] text-gray-400 uppercase tracking-tighter">Sapporo</span>
+            <!-- 倒數圓圈 -->
+            <div class="countdown-container">
+                <div class="breathing-aura"></div>
+                <svg class="progress-ring" viewBox="0 0 340 340">
+                    <circle cx="170" cy="170" r="160" fill="none" stroke="rgba(0,0,0,0.02)" stroke-width="2"></circle>
+                    <circle id="progressBar" cx="170" cy="170" r="160" fill="none" stroke-width="3" stroke-linecap="round"></circle>
+                </svg>
+                
+                <div class="flex flex-col items-center z-10">
+                    <div class="relative">
+                        <span id="daysLeft" class="text-[100px] sm:text-[130px] font-light leading-none tracking-tighter">00</span>
+                        <span class="absolute -right-6 bottom-4 text-[10px] font-bold text-gray-300 uppercase tracking-widest">Days</span>
+                    </div>
+                    <div class="flex gap-4 opacity-40 mt-1">
+                        <span id="hmsDisplay" class="text-[10px] font-medium tracking-widest uppercase">00H 00M 00S</span>
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col gap-2">
-                <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest ml-4">Currency Rate</span>
-                <div class="btn-pill">
-                    <span class="text-lg">⚖️</span>
-                    <div class="flex flex-col">
-                        <span id="currencyRef" class="text-sm font-semibold">4.67</span>
-                        <span id="curCode" class="text-[8px] text-gray-400 uppercase tracking-tighter">TWD/JPY</span>
+
+            <div class="swipe-hint">Swipe to Switch</div>
+        </main>
+
+        <!-- 底部卡片 -->
+        <div class="action-card">
+            <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-6"></div>
+            
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="flex flex-col gap-1">
+                    <span class="text-[8px] text-gray-400 font-bold uppercase tracking-widest ml-3">Weather</span>
+                    <div class="btn-pill">
+                        <span id="weatherIcon" class="text-lg">☀️</span>
+                        <div class="flex flex-col">
+                            <span id="weatherTemp" class="text-xs font-semibold">--°C</span>
+                            <span class="text-[7px] text-gray-400 uppercase tracking-tighter">Local</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <span class="text-[8px] text-gray-400 font-bold uppercase tracking-widest ml-3">Rate</span>
+                    <div class="btn-pill">
+                        <span class="text-lg">⚖️</span>
+                        <div class="flex flex-col">
+                            <span id="currencyRef" class="text-xs font-semibold">--</span>
+                            <span id="curCode" class="text-[7px] text-gray-400 uppercase tracking-tighter">TWD/--</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="flex flex-col gap-4">
-            <button id="openCityModal" class="btn-pill justify-center py-4 bg-black/[0.03]">
-                <span class="text-[10px] font-bold uppercase tracking-[0.3em]">Explore Destinations</span>
-            </button>
-            <div class="btn-pill flex-col py-4">
-                <span class="text-[8px] text-gray-400 font-bold uppercase tracking-widest">Departure Time</span>
-                <input type="datetime-local" id="dateInput">
+            <div class="flex flex-col gap-3">
+                <button id="openCityModal" class="btn-pill justify-center py-3 bg-black/[0.03]">
+                    <span class="text-[9px] font-bold uppercase tracking-[0.2em]">Destinations</span>
+                </button>
+                <div class="btn-pill flex-col py-2">
+                    <span class="text-[7px] text-gray-400 font-bold uppercase tracking-widest">Departure Time</span>
+                    <input type="datetime-local" id="dateInput">
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 全屏城市抽屜 -->
+    <!-- 城市抽屜 -->
     <div id="cityDrawer">
-        <div class="flex justify-between items-center mb-12">
-            <h2 class="text-xs font-bold tracking-[0.5em] uppercase text-gray-400">Where to next?</h2>
-            <button id="closeCityModal" class="p-2">✕</button>
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-[10px] font-bold tracking-[0.5em] uppercase text-gray-400">Selection</h2>
+            <button id="closeCityModal" class="p-2 text-xl">✕</button>
         </div>
-        <div id="cityList" class="flex-1 overflow-y-auto no-scrollbar space-y-2">
-            <!-- JS 動態生成 -->
-        </div>
+        <div id="cityList" class="flex-1 overflow-y-auto no-scrollbar space-y-2"></div>
     </div>
 
     <script>
@@ -265,8 +269,6 @@
         let targetDate = new Date();
         const bgLayers = [document.getElementById('bg1'), document.getElementById('bg2')];
         let bgIdx = 0;
-
-        // 手勢偵測
         let touchStartX = 0;
         let touchEndX = 0;
 
@@ -294,7 +296,6 @@
             document.getElementById('currencyRef').innerText = city.rate;
             document.getElementById('curCode').innerText = `TWD / ${city.cur}`;
             
-            // 背景平滑切換
             const nextBg = (bgIdx + 1) % 2;
             const url = `https://images.unsplash.com/featured/?${encodeURIComponent(city.query)}`;
             const img = new Image();
@@ -334,20 +335,29 @@
             daysEl.innerText = d.toString().padStart(2, '0');
             hmsEl.innerText = `${h}H ${m}M ${s}S`;
 
-            // 進度條動畫 (以 100 天為基準)
             const circumference = 2 * Math.PI * 160;
             const p = Math.max(0, Math.min(1, diff / (100 * 86400000)));
             progress.style.strokeDasharray = circumference;
             progress.style.strokeDashoffset = circumference * p;
             
             checkMilestone(d);
+            updateLocalTime(now);
+        }
+
+        function updateLocalTime(now) {
+            if (currentIndex >= 0) {
+                const city = destinations[currentIndex];
+                const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                const local = new Date(utc + (3600000 * city.tz));
+                document.getElementById('localTimeDisplay').innerText = `Dest / ${local.toLocaleTimeString('en-GB', { hour12: false })}`;
+            }
         }
 
         function checkMilestone(d) {
             const area = document.getElementById('milestoneArea');
             let text = d === 0 ? "Enjoy your journey today!" : `Only ${d} days until your escape.`;
             if (area.innerText !== text) {
-                area.innerHTML = `<p class="text-[10px] font-medium tracking-[0.4em] uppercase text-black/40 animate-pulse">${text}</p>`;
+                area.innerHTML = `<p class="text-[9px] font-medium tracking-[0.3em] uppercase text-black/40 animate-pulse">${text}</p>`;
             }
         }
 
@@ -356,17 +366,15 @@
             document.getElementById('weatherTemp').innerText = temps[Math.floor(Math.random()*temps.length)];
         }
 
-        // 初始化
         function init() {
             const savedCityId = localStorage.getItem('travel_city_id');
             const savedDate = localStorage.getItem('travel_target_date');
 
-            // 渲染城市列表
             const list = document.getElementById('cityList');
             destinations.forEach(city => {
                 const item = document.createElement('div');
-                item.className = "flex justify-between items-center p-6 bg-white/50 rounded-3xl border border-transparent active:border-black/5 transition-all";
-                item.innerHTML = `<span class="text-sm tracking-widest uppercase font-medium">${city.full}</span><span>${city.icon}</span>`;
+                item.className = "flex justify-between items-center p-5 bg-white/50 rounded-2xl border border-transparent active:border-black/5 transition-all";
+                item.innerHTML = `<span class="text-xs tracking-widest uppercase font-medium">${city.full}</span><span>${city.icon}</span>`;
                 item.onclick = () => {
                     selectCity(city);
                     document.getElementById('cityDrawer').classList.remove('active');
@@ -391,7 +399,6 @@
                 targetDate = new Date(val);
             }
 
-            // 事件綁定
             document.getElementById('swipeArea').addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
             document.getElementById('swipeArea').addEventListener('touchend', e => {
                 touchEndX = e.changedTouches[0].screenX;
